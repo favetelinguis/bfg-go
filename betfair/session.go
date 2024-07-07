@@ -69,17 +69,18 @@ func (p *Session) connectedClient(url string, method string, body io.Reader) ([]
 	return responseBody, nil
 }
 
-func (p *Session) Logout() (*LogoutResponse, error) {
+func (p *Session) Logout() *LogoutResponse {
 	body, err := p.connectedClient("https://identitysso.betfair.se/api/logout", http.MethodPost, nil)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	var res LogoutResponse
 	if err = json.Unmarshal(body, &res); err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &res, nil
+	fmt.Printf("Logout with: %v", res)
+	return &res
 }
 
 func (p *Session) KeepAlive() (*LogoutResponse, error) {

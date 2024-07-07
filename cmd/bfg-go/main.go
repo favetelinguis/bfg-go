@@ -37,6 +37,7 @@ func main() {
 		}
 		fmt.Println("running login")
 		session := betfair.NewSession()
+		defer session.Logout()
 		val, err := session.CallListMarketCatalogue()
 		if err != nil {
 			panic(err)
