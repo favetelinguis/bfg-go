@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/key"
+	// "github.com/charmbracelet/bubbles/key"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	// "github.com/charmbracelet/lipgloss"
 	"github.com/favetelinguis/bfg-go/betfair"
 )
 
@@ -80,7 +80,19 @@ func (m model) View() string {
 }
 
 func main() {
+	// Login and get a token
+	session := betfair.NewSession()
+	defer session.Logout()
+	// Setup stream and auth to stream
+	stream := betfair.NewStream(session)
+	defer stream.StopListen()
+	
+	// Start tui
 	p := tea.NewProgram(initalModel(), tea.WithAltScreen())
+	
+	// Connect the tui with the betfair stream so we can send messages to the update fn
+	stream.StartListen(p.Send)
+	
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Error starting %v", err)
 		os.Exit(1)

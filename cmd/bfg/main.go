@@ -35,14 +35,42 @@ func main() {
 			fmt.Println("failed parsing args")
 			os.Exit(1)
 		}
+		var err error
 		fmt.Println("running login")
-		session := betfair.NewSession()
-		defer session.Logout()
-		val, err := session.CallListMarketCatalogue()
+		conf := newLoginConfig()
+		client, err := betfair.NewClient(&conf)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("config %+v\n", val)
+		defer func() {
+			err := client.Logout()
+			if err != nil {
+				panic(err)
+			}
+		}()
+
+		err = client.Login()
+		if err != nil {
+			panic(err)
+		}
+
+		if client.IsSessionExpired() {
+			panic("Login failed")
+		}
+		val, err := client.Betting.ListMarketCatalogue()
+		if err != nil {
+			panic(err)
+		}
+		// fmt.Printf("client %+v\n", *client.session)
+		fmt.Printf("markets %+v\n", val)
+
+		// client.Account.GetAccountFunds()
+
+		// val, err := session.CallListMarketCatalogue()
+		// _ = betfair.NewStream(session)
+		// if err != nil {
+		// 	panic(err)
+		// }
 
 	case "logout":
 		if err := logoutCmd.Parse(os.Args[2:]); err != nil {
