@@ -97,8 +97,8 @@ func (s *Streaming) Authenticate() error {
 	}
 	authMessage := &authenticationMessage{
 		Op:      "authentication",
-		AppKey:  s.Client.loginConfig.AppKey,
-		Session: s.Client.session.SessionToken,
+		AppKey:  s.Session.loginConfig.AppKey,
+		Session: s.Session.token.SessionToken,
 	}
 
 	err := s.send(authMessage)

@@ -28,15 +28,15 @@ type LoginConfig struct {
 }
 
 // holds data from successful login
-type session struct {
+type Token struct {
 	SessionToken string
 	LoginTime    time.Time
 }
 
 // main client
-type Client struct {
+type Session struct {
 	loginConfig  *LoginConfig
-	session      *session
+	token        *Token
 	certificates *tls.Certificate
 	Betting      *Betting
 	Account      *Account
@@ -44,15 +44,15 @@ type Client struct {
 }
 
 type Betting struct {
-	Client *Client
+	Session *Session
 }
 
 type Account struct {
-	Client *Client
+	Session *Session
 }
 
 type Streaming struct {
-	Client      *Client
+	Session     *Session
 	conn        *tls.Conn
 	closeCh     chan struct{}
 	msgCount    int
@@ -60,10 +60,10 @@ type Streaming struct {
 }
 
 // creates a new client, this is the central object for interactions with betfair
-func NewClient(loginConfig *LoginConfig) (*Client, error) {
-	c := &Client{}
+func NewSession(loginConfig *LoginConfig) (*Session, error) {
+	c := &Session{}
 
-	c.session = &session{}
+	c.token = &Token{}
 	var cert tls.Certificate
 	var err error
 
@@ -82,25 +82,25 @@ func NewClient(loginConfig *LoginConfig) (*Client, error) {
 
 	// create betting
 	c.Betting = &Betting{}
-	c.Betting.Client = c
+	c.Betting.Session = c
 
 	// create account
 	c.Account = &Account{}
-	c.Account.Client = c
+	c.Account.Session = c
 
 	// create streaming
 	c.Streaming = &Streaming{}
-	c.Streaming.Client = c
+	c.Streaming.Session = c
 
 	return c, nil
 }
 
 // check if more then 12h has passed since login/keepAlive
-func (c *Client) IsSessionExpired() bool {
-	if c.session.SessionToken == "" {
+func (s *Session) IsSessionExpired() bool {
+	if s.token.SessionToken == "" {
 		return true
 	}
-	duration := time.Since(c.session.LoginTime)
+	duration := time.Since(s.token.LoginTime)
 
 	// TODO not sure its 12 hours for swe but i can test
 	return duration.Hours() > 12

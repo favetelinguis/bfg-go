@@ -18,10 +18,10 @@ type loginResponse struct {
 	SessionToken string `json:"sessionToken"`
 }
 
-func (c *Client) Login() error {
+func (s *Session) Login() error {
 	url := createUrl(login_url, "certlogin")
 
-	response, err := doLoginRequest(c, url)
+	response, err := doLoginRequest(s, url)
 	if err != nil {
 		return err
 	}
@@ -35,12 +35,12 @@ func (c *Client) Login() error {
 	}
 
 	// Update client with session information
-	c.session.SessionToken = result.SessionToken
-	c.session.LoginTime = time.Now().UTC()
+	s.token.SessionToken = result.SessionToken
+	s.token.LoginTime = time.Now().UTC()
 	return nil
 }
 
-func doLoginRequest(c *Client, url string) ([]byte, error) {
+func doLoginRequest(c *Session, url string) ([]byte, error) {
 
 	// Create tls.Config with the client certificate
 	tlsConfig := &tls.Config{

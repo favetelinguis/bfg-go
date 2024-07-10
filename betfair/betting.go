@@ -87,8 +87,8 @@ func (b *Betting) ListMarketCatalogue() ([]MarketCatalogue, error) {
 	methodName := "listMarketCatalogue"
 	client := jsonrpc.NewClientWithOpts(api_betting_url, &jsonrpc.RPCClientOpts{
 		CustomHeaders: map[string]string{
-			"X-Application":    b.Client.loginConfig.AppKey,
-			"X-Authentication": b.Client.session.SessionToken,
+			"X-Application":    b.Session.loginConfig.AppKey,
+			"X-Authentication": b.Session.token.SessionToken,
 			// TODO should i use keep-alive?
 			// "Connection": "keep-alive",
 		},

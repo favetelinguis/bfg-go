@@ -15,13 +15,13 @@ type identityResponse struct {
 	Error   string `json:"error"`
 }
 
-func (c *Client) Logout() error {
-	if c.session.SessionToken == "" {
+func (s *Session) Logout() error {
+	if s.token.SessionToken == "" {
 		return nil
 	}
 	url := createUrl(identity_url, "logout")
 
-	response, err := doIdentityRequest(c, url)
+	response, err := doIdentityRequest(s, url)
 	if err != nil {
 		return err
 	}
@@ -35,12 +35,12 @@ func (c *Client) Logout() error {
 		return fmt.Errorf("logout status not SUCCESS is  %s with reason %s", result.Status, result.Error)
 	}
 
-	c.session.SessionToken = ""
-	c.session.LoginTime = time.Time{}
+	s.token.SessionToken = ""
+	s.token.LoginTime = time.Time{}
 	return nil
 }
 
-func (c *Client) KeepAlive() error {
+func (c *Session) KeepAlive() error {
 	url := createUrl(identity_url, "keepAlive")
 
 	response, err := doIdentityRequest(c, url)
@@ -57,13 +57,13 @@ func (c *Client) KeepAlive() error {
 		return fmt.Errorf("keepAlive status not SUCCESS is  %s with reason %s", result.Status, result.Error)
 	}
 
-	c.session.SessionToken = result.Token
-	c.session.LoginTime = time.Now().UTC()
+	c.token.SessionToken = result.Token
+	c.token.LoginTime = time.Now().UTC()
 
 	return nil
 }
 
-func doIdentityRequest(c *Client, url string) ([]byte, error) {
+func doIdentityRequest(c *Session, url string) ([]byte, error) {
 
 	r, err := http.NewRequest(http.MethodPost, url, nil)
 	if err != nil {
@@ -72,7 +72,7 @@ func doIdentityRequest(c *Client, url string) ([]byte, error) {
 	r.Header.Set("Content-Type", "application/json")
 	r.Header.Set("Accept", "application/json")
 	r.Header.Set("X-Application", c.loginConfig.AppKey)
-	r.Header.Set("X-Authentication", c.session.SessionToken)
+	r.Header.Set("X-Authentication", c.token.SessionToken)
 
 	client := &http.Client{}
 

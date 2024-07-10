@@ -39,7 +39,7 @@ func main() {
 		var err error
 		fmt.Println("running login")
 		conf := newLoginConfig()
-		client, err := betfair.NewClient(&conf)
+		client, err := betfair.NewSession(&conf)
 		if err != nil {
 			panic(err)
 		}
