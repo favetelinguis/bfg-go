@@ -55,8 +55,10 @@ type Streaming struct {
 	Session     *Session
 	conn        *tls.Conn
 	closeCh     chan struct{}
+	outCh       chan []cache.Market
 	msgCount    int
 	StatusCache *cache.StatusCache
+	MarketCache *cache.MarketCache
 }
 
 // creates a new client, this is the central object for interactions with betfair

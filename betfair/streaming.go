@@ -61,21 +61,24 @@ func (msg *authenticationMessage) SetId(id int) {
 	msg.Id = id
 }
 
-func (s *Streaming) Connect() error {
+func (s *Streaming) Connect() (chan []cache.Market, error) {
 	conf := &tls.Config{
 		InsecureSkipVerify: false,
 	}
 
 	conn, err := tls.Dial("tcp", stream_url, conf)
 	if err != nil {
-		return fmt.Errorf("stream connection failure: %w", err)
+		return nil, fmt.Errorf("stream connection failure: %w", err)
 	}
 
 	s.conn = conn
 	s.closeCh = make(chan struct{})
+	s.outCh = make(chan []cache.Market, 1)
 	s.StatusCache = cache.NewStatusCache()
+	s.MarketCache = cache.NewMarketCache()
 	go s.receiveLoop()
-	return nil
+
+	return s.outCh, nil
 }
 
 func (s *Streaming) Close() {
@@ -159,7 +162,13 @@ func (s *Streaming) parse(message string) error {
 	case "connection":
 		fmt.Println(message)
 	case "mcm":
-		fmt.Println(message)
+		updates, err := s.MarketCache.Parse(message)
+		if err != nil {
+			return fmt.Errorf("unable to update market cache: %w", err)
+		}
+		if updates != nil {
+			s.outCh <- updates
+		}
 	case "ocm":
 		fmt.Println(message)
 	default:

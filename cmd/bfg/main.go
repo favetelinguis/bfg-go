@@ -7,7 +7,15 @@ import (
 	"time"
 
 	"github.com/favetelinguis/bfg-go/betfair"
+	"github.com/favetelinguis/bfg-go/betfair/cache"
 )
+
+func receiveLoop(ch chan []cache.Market) {
+	for {
+		val := <-ch
+		fmt.Printf("GOT VALUE: %v", val)
+	}
+}
 
 func main() {
 	// listMarketsCmd := flag.NewFlagSet("list-markets", flag.ExitOnError)
@@ -65,11 +73,12 @@ func main() {
 		// fmt.Printf("client %+v\n", *client.session)
 		fmt.Printf("markets %+v\n", val)
 
-		err = client.Streaming.Connect()
+		ch, err := client.Streaming.Connect()
 		if err != nil {
 			panic(err)
 		}
 		defer client.Streaming.Close()
+		go receiveLoop(ch)
 
 		err = client.Streaming.Authenticate()
 		if err != nil {
