@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/favetelinguis/bfg-go/betfair/cache"
 )
 
 const (
@@ -12,6 +14,7 @@ const (
 	identity_url    = "https://identitysso.betfair.se/api/"
 	api_betting_url = "https://api.betfair.com/exchange/betting/json-rpc/v1"
 	api_account_url = "https://api.betfair.com/exchange/account/json-rpc/v1"
+	stream_url      = "stream-api.betfair.com:443"
 )
 
 // holds login data
@@ -49,7 +52,11 @@ type Account struct {
 }
 
 type Streaming struct {
-	Client *Client
+	Client      *Client
+	conn        *tls.Conn
+	closeCh     chan struct{}
+	msgCount    int
+	StatusCache *cache.StatusCache
 }
 
 // creates a new client, this is the central object for interactions with betfair

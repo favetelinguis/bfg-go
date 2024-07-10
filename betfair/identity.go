@@ -2,7 +2,6 @@ package betfair
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,6 +16,9 @@ type identityResponse struct {
 }
 
 func (c *Client) Logout() error {
+	if c.session.SessionToken == "" {
+		return nil
+	}
 	url := createUrl(identity_url, "logout")
 
 	response, err := doIdentityRequest(c, url)
@@ -30,7 +32,7 @@ func (c *Client) Logout() error {
 	}
 
 	if result.Status != "SUCCESS" {
-		return errors.New(fmt.Sprintf("logout status not SUCCESS is  %s with reason %s", result.Status, result.Error))
+		return fmt.Errorf("logout status not SUCCESS is  %s with reason %s", result.Status, result.Error)
 	}
 
 	c.session.SessionToken = ""
@@ -52,7 +54,7 @@ func (c *Client) KeepAlive() error {
 	}
 
 	if result.Status != "SUCCESS" {
-		return errors.New(fmt.Sprintf("keepAlive status not SUCCESS is  %s with reason %s", result.Status, result.Error))
+		return fmt.Errorf("keepAlive status not SUCCESS is  %s with reason %s", result.Status, result.Error)
 	}
 
 	c.session.SessionToken = result.Token

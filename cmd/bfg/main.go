@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/favetelinguis/bfg-go/betfair"
 )
@@ -63,6 +64,25 @@ func main() {
 		}
 		// fmt.Printf("client %+v\n", *client.session)
 		fmt.Printf("markets %+v\n", val)
+
+		err = client.Streaming.Connect()
+		if err != nil {
+			panic(err)
+		}
+		defer client.Streaming.Close()
+
+		err = client.Streaming.Authenticate()
+		if err != nil {
+			panic(err)
+		}
+
+		err = client.Streaming.SubscribeToMarkets([]string{"1.230518311"})
+		if err != nil {
+			panic(err)
+		}
+
+		// Allow for some time to see response
+		time.Sleep(30 * time.Second)
 
 		// client.Account.GetAccountFunds()
 

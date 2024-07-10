@@ -9,22 +9,22 @@ import (
 )
 
 type EventType struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id   *string `json:"id,omitempty"`
+	Name *string `json:"name,omitempty"`
 }
 
 type Competition struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	Id   *string `json:"id"`
+	Name *string `json:"name"`
 }
 
 type Event struct {
-	Id          string `json:"id"`
-	OpenDate    string `json:"openDate"`
-	TimeZone    string `json:"timezone"`
-	CountryCode string `json:"countryCode"`
-	Name        string `json:"name"`
-	Venue       string `json:"venue"`
+	Id          string `json:"id,omitempty"`
+	OpenDate    string `json:"openDate,omitempty"`
+	TimeZone    string `json:"timezone,omitempty"`
+	CountryCode string `json:"countryCode,omitempty"`
+	Name        string `json:"name,omitempty"`
+	Venue       string `json:"venue,omitempty"`
 }
 
 type MarketCatalogueDescription struct {
@@ -36,13 +36,13 @@ type MarketCatalogueDescription struct {
 	MarketType         string    `json:"marketType"`
 	PersistenceEnabled bool      `json:"persistenceEnabled"`
 	Regulator          string    `json:"regulator"`
-	Rules              string    `json:"rules"`
-	RulesHasDate       bool      `json:"rulesHasDate"`
 	SuspendDate        time.Time `json:"suspendTime"`
 	TurnInPlayEnabled  bool      `json:"turnInPlayEnabled"`
-	Wallet             string    `json:"wallet"`
-	EachWayDivisor     float32   `json:"eachWayDivisor"`
-	Clarifications     string    `json:"clarifications"`
+	Rules              *string   `json:"rules,omitempty"`
+	RulesHasDate       *bool     `json:"rulesHasDate,omitempty"`
+	Wallet             *string   `json:"wallet,omitempty"`
+	EachWayDivisor     *float32  `json:"eachWayDivisor,omitempty"`
+	Clarifications     *string   `json:"clarifications,omitempty"`
 }
 
 type Metadata struct {
@@ -60,13 +60,13 @@ type RunnerCatalogue struct {
 type MarketCatalogue struct {
 	MarketId                   string                     `json:"marketId"`
 	MarketName                 string                     `json:"marketName"`
-	TotalMatched               float32                    `json:"totalMatched"`
-	MarketStartTime            time.Time                  `json:"marketStartTime"`
-	Competition                Competition                `json:"competition"`
-	Event                      Event                      `json:"event"`
-	EventType                  EventType                  `json:"eventType"`
-	MarketCatalogueDescription MarketCatalogueDescription `json:"description"`
-	Runners                    []RunnerCatalogue          `json:"runners"`
+	TotalMatched               *float32                   `json:"totalMatched,omitempty"`
+	MarketStartTime            *time.Time                 `json:"marketStartTime,omitempty"`
+	Competition                Competition                `json:"competition,omitempty"`
+	Event                      Event                      `json:"event,omitempty"`
+	EventType                  EventType                  `json:"eventType,omitempty"`
+	MarketCatalogueDescription MarketCatalogueDescription `json:"description,omitempty"`
+	Runners                    []RunnerCatalogue          `json:"runners,omitempty"`
 }
 
 func (b *Betting) ListMarketCatalogue() ([]MarketCatalogue, error) {
